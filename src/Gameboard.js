@@ -30,8 +30,7 @@ class Gameboard {
       for (let i = cs1[1]; i <= cs2[1]; i++) {
         // if square occupied, abort.
         if (tempBoard[cs1[0]][i].ship) {
-          console.log(1);
-          return;
+          return false;
         }
         tempBoard[cs1[0]][i].ship = ship;
       }
@@ -41,20 +40,21 @@ class Gameboard {
       for (let i = cs1[0]; i <= cs2[0]; i++) {
         // if square occupied, abort.
         if (tempBoard[i][cs1[1]].ship) {
-          console.log(2);
-          return;
+          return false;
         }
         tempBoard[i][cs1[1]].ship = ship;
       }
     }
     this.ships.push(ship);
     this.board = tempBoard;
+    return true;
   }
 
   receiveAttack(cs) {
     const square = this.board[cs[0]][cs[1]];
-    if (!square.hit) square.ship.hit();
+    if (!square.hit && square.ship) square.ship.hit();
     square.hit = true;
+    return square.ship ? true : false;
   }
 
   allSunken() {

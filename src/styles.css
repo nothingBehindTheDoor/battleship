@@ -8,4 +8,118 @@
 
 html {
   font-size: clamp(12px, max(2vh, 2vw), 24px);
+  font-family:sans-serif;
+  --btn-border: rgb(149, 148, 148);
+  --darken: rgba(0, 0, 0, 0.1);
+  --darken-further: rgba(0, 0, 0, 0.15);
+  --shadow: rgba(205, 205, 205, 0.5);
+}
+
+button {
+  font-family:sans-serif;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  justify-content: center;
+}
+
+header {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid var(--btn-border);
+  box-shadow: 0px 4px 4px var(--shadow);
+}
+
+main {
+  flex: 11;
+  width: 100vw;
+}
+
+/* default starting screen */
+
+main#default {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+main#default button {
+  height: 4rem;
+  width: 8rem;
+  font-size: 1.5rem;
+  border: 1px solid var(--btn-border);
+  border-radius: .6rem;
+  transition: all ease-in-out 200ms;
+}
+
+main#default button:hover {
+  cursor: pointer;
+  background-color: var(--darken);
+  transform:scale(1.02);
+  box-shadow: 4px 4px 0px var(--shadow);
+}
+
+main#default button:active {
+  transform: scale(0.98);
+  background-color: var(--darken-further);
+}
+
+/* in-game screen */
+
+main#in-game {
+  min-height: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+#main-inner {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  padding-inline: 1rem;
+}
+
+.board-header {
+  font-size: 1.2rem;
+}
+
+#main-inner > div {
+  width: fit-content;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.board {
+  width: fit-content;
+  border: .5rem solid var(--btn-border);
+  border-radius: .5rem;
+  display: grid;
+  grid-template: repeat(8, clamp(2.5rem, 3rem, 8vw)) / repeat(8, clamp(2.5rem, 3rem, 8vw));
+  /* prevents board collision on small screens */
+  margin-bottom: .5rem;
+}
+
+.square {
+  border: 1px solid var(--btn-border);
+}
+.occupied {
+  background-color: navy;
+}
+
+.hit {
+  background-color: grey;
+}
+
+.ship-hit {
+  background-color: red;
 }
