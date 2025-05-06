@@ -111,15 +111,32 @@ main#in-game {
 
 .square {
   border: 1px solid var(--btn-border);
-}
-.occupied {
-  background-color: navy;
+  transition: all ease-in-out 200ms;
 }
 
-.hit {
-  background-color: grey;
+.square:hover:not(.hit):not(.occupied) {
+  box-shadow: inset 0px 0px 4px 6px var(--shadow);
+  background-color: var(--darken);
+  cursor: pointer;
 }
 
-.ship-hit {
-  background-color: red;
+.occupied.horizontal::before {
+  content: url(./arrow-left-right-bold.svg);
+}
+
+.occupied::before {
+  content: url(./arrow-up-down-bold.svg);
+}
+
+.hit:not(.ship-hit)::before {
+  content: url(./waves.svg);
+}
+
+.ship-hit::before {
+  content: url(./fire.svg);
+}
+
+.clicked {
+  box-shadow: inset 0px 0px 4px 6px var(--shadow);
+  background-color: var(--darken);
 }

@@ -1,7 +1,7 @@
 const body = document.querySelector("body");
 const main = document.querySelector("main");
 import { Gameboard } from "./script";
-import { player, enemy } from "./script";
+import { player, enemy, Ship } from "./script";
 
 function displayBoards(board1, board2) {
   main.innerHTML = `<div id="main-inner">
@@ -26,8 +26,17 @@ function displayBoards(board1, board2) {
       if (board1[i][j].ship) {
         squareDiv.classList.add("occupied");
       }
+      if (board1[i][j].horizontal) {
+        squareDiv.classList.add("horizontal");
+      }
+      // if (Object.is(board1[i][(j > 1) ? j - 1 : j + 1].ship, board1[i][j].ship) && board1[i][j].ship !== null) {
+      //   console.log("horizontal");
+      // }
       if (board1[i][j].hit) {
         squareDiv.classList.add("hit");
+      }
+      if (board1[i][j].hit && board1[i][j].ship) {
+        squareDiv.classList.add("ship-hit");
       }
 
       const squareDiv2 = document.createElement("div");
@@ -78,7 +87,6 @@ function placeShips(board1, board2) {
   function getCoord() {
     // checks that there are ships left to be placed
     if (Object.values(ships).reduce((prev, cur) => prev + cur) === 0) {
-      console.log("return");
       startRound();
       return;
     }
@@ -87,11 +95,17 @@ function placeShips(board1, board2) {
     document.querySelector(".player").addEventListener(
       "click",
       (e) => {
+        e.target.classList.toggle("clicked");
         coordinates.push([...e.target.classList[0].split("")]);
         document.querySelector(".player").addEventListener(
           "click",
-          (e) => {
-            coordinates.push([...e.target.classList[0].split("")]);
+          (ev) => {
+            e.target.classList.toggle("clicked");
+            if (ev.target === e.target) {
+              getCoord();
+              return;
+            }
+            coordinates.push([...ev.target.classList[0].split("")]);
             checkCoords();
           },
           { once: true }
@@ -180,28 +194,39 @@ function temporaryTextContent(text, node, time = 3000) {
 }
 
 function startRound() {
-
+  console.log(enemy.board.board);
   playerTurn();
   function playerTurn() {
     document.querySelector("#title-heading").textContent =
-    "Click on a square to attack the enemy!";
-    document.querySelector(".enemy").addEventListener("click", (e) => {
-      enemy.board.receiveAttack(e.target.classList[0].split(""))
-        ? e.target.classList.add("ship-hit")
-        : e.target.classList.add("hit");
-      if (enemy.board.allSunken()) {
-        console.log("HURRAY !!!");
-      } else {
-        enemyTurn();
-      }
-    });
+      "Click on a square to attack the enemy!";
+    document.querySelector(".enemy").addEventListener(
+      "click",
+      (e) => {
+        enemy.board.receiveAttack(e.target.classList[0].split(""))
+          ? e.target.classList.add("ship-hit")
+          : e.target.classList.add("hit");
+        if (enemy.board.allSunken()) {
+          console.log("HURRAY !!!");
+        } else {
+          enemyTurn();
+        }
+      },
+      { once: true }
+    );
   }
 
   function enemyTurn() {
-    document.querySelector("#title-heading").textContent =
-    "Enemy's turn!";
-    const cs = [Math.floor(Math.random * 7.99), Math.floor(Math.random * 7.99)];
-    console.log(cs);
+    document.querySelector("#title-heading").textContent = "Enemy's turn!";
+    const cs = [];
+    cs.push(Math.floor(Math.random() * 7.99));
+    cs.push(Math.floor(Math.random() * 7.99));
+    player.board.receiveAttack(cs);
+    displayBoards(player.board.board, enemy.board.board);
+    if (player.board.allSunken()) {
+      console.log("you lost :(");
+    } else {
+      playerTurn();
+    }
   }
 }
 

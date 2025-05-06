@@ -6,13 +6,12 @@ class Gameboard {
     this.ships = []; 
     for (const arr of this.board) {
       for (let i = 0; i < 8; i++) {
-        arr.push({ hit: false, ship: null });
+        arr.push({ hit: false, ship: null, horizontal: false });
       }
     }
   }
 
   placeShip(cs1, cs2) {
-    let tempBoard = JSON.parse(JSON.stringify(this.board));
     let length;
     // this gets flipped to true if the ship is placed horizontally, so we don't have to re-determine it later.
     let horizontal = false;
@@ -24,29 +23,38 @@ class Gameboard {
       length = cs1[0] > cs2[0] ? cs1[0] - cs2[0] + 1 : cs2[0] - cs1[0] + 1;
     }
     const ship = new Ship(length);
+    let squaresOccupiedByNewShip = [];
     // if ship is placed horizontally
     if (horizontal) {
       // loops through all the squares the ship will occupy
       for (let i = cs1[1]; i <= cs2[1]; i++) {
         // if square occupied, abort.
-        if (tempBoard[cs1[0]][i].ship) {
+        if (this.board[cs1[0]][i].ship) {
           return false;
+        } else {
+          // otherwise add the square's coords to the array
+          squaresOccupiedByNewShip.push([cs1[0], i]);
         }
-        tempBoard[cs1[0]][i].ship = ship;
       }
       // if ship is placed vertically
     } else {
       // loops through all the squares the ship will occupy
       for (let i = cs1[0]; i <= cs2[0]; i++) {
         // if square occupied, abort.
-        if (tempBoard[i][cs1[1]].ship) {
+        if (this.board[i][cs1[1]].ship) {
           return false;
+        } else {
+          // otherwise add the square's coords to the array
+          squaresOccupiedByNewShip.push([+i, +cs1[1]])
         }
-        tempBoard[i][cs1[1]].ship = ship;
       }
     }
+    // add ship to board
+    for (const cs of squaresOccupiedByNewShip) {
+      this.board[cs[0]][cs[1]].ship = ship;
+      if (horizontal) this.board[cs[0]][cs[1]].horizontal = true;
+    }
     this.ships.push(ship);
-    this.board = tempBoard;
     return true;
   }
 
@@ -59,9 +67,9 @@ class Gameboard {
 
   allSunken() {
     for (const ship of this.ships) {
-      if (ship.isSunk()) return true;
+      if (!ship.isSunk()) return false;
     }
-    return false;
+    return true;
   }
 }
 
