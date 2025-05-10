@@ -29,14 +29,14 @@ function displayBoards(board1, board2) {
       if (board1[i][j].horizontal) {
         squareDiv.classList.add("horizontal");
       }
-      // if (Object.is(board1[i][(j > 1) ? j - 1 : j + 1].ship, board1[i][j].ship) && board1[i][j].ship !== null) {
-      //   console.log("horizontal");
-      // }
       if (board1[i][j].hit) {
         squareDiv.classList.add("hit");
       }
       if (board1[i][j].hit && board1[i][j].ship) {
         squareDiv.classList.add("ship-hit");
+      }
+      if (board1[i][j].ship && board1[i][j].ship.isSunk()) {
+        squareDiv.classList.add("ship-sunk");
       }
 
       const squareDiv2 = document.createElement("div");
@@ -47,6 +47,9 @@ function displayBoards(board1, board2) {
       }
       if (board2[i][j].hit && board2[i][j].ship) {
         squareDiv2.classList.add("ship-hit");
+      }
+      if (board2[i][j].ship && board2[i][j].ship.isSunk()) {
+        squareDiv2.classList.add("ship-sunk");
       }
 
       playerBoard.append(squareDiv);
@@ -206,7 +209,8 @@ function startRound() {
           ? e.target.classList.add("ship-hit")
           : e.target.classList.add("hit");
         if (enemy.board.allSunken()) {
-          console.log("HURRAY !!!");
+          document.querySelector("dialog").showModal();
+          document.querySelector("#dialog-txt").textContent = "You won !!! :D";
         } else {
           enemyTurn();
         }
@@ -223,11 +227,18 @@ function startRound() {
     player.board.receiveAttack(cs);
     displayBoards(player.board.board, enemy.board.board);
     if (player.board.allSunken()) {
-      console.log("you lost :(");
+      document.querySelector("dialog").showModal();
+      document.querySelector("#dialog-txt").textContent = "You lost ... D:";
     } else {
       playerTurn();
     }
   }
 }
+
+// dialog box new game btn
+document.querySelector("#dialog-btn").addEventListener("click", (e) => {
+  document.querySelector("dialog").close();
+  window.location.reload();
+});
 
 export { displayBoards, placeShips };

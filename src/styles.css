@@ -8,7 +8,7 @@
 
 html {
   font-size: clamp(12px, max(2vh, 2vw), 24px);
-  font-family:sans-serif;
+  font-family: sans-serif;
   --btn-border: rgb(149, 148, 148);
   --darken: rgba(0, 0, 0, 0.1);
   --darken-further: rgba(0, 0, 0, 0.15);
@@ -16,7 +16,7 @@ html {
 }
 
 button {
-  font-family:sans-serif;
+  font-family: sans-serif;
 }
 
 body {
@@ -53,14 +53,14 @@ main#default button {
   width: 8rem;
   font-size: 1.5rem;
   border: 1px solid var(--btn-border);
-  border-radius: .6rem;
+  border-radius: 0.6rem;
   transition: all ease-in-out 200ms;
 }
 
 main#default button:hover {
   cursor: pointer;
   background-color: var(--darken);
-  transform:scale(1.02);
+  transform: scale(1.02);
   box-shadow: 4px 4px 0px var(--shadow);
 }
 
@@ -101,12 +101,15 @@ main#in-game {
 
 .board {
   width: fit-content;
-  border: .5rem solid var(--btn-border);
-  border-radius: .5rem;
+  border: 0.5rem solid var(--btn-border);
+  border-radius: 0.5rem;
   display: grid;
-  grid-template: repeat(8, clamp(2.5rem, 3rem, 8vw)) / repeat(8, clamp(2.5rem, 3rem, 8vw));
+  grid-template: repeat(8, clamp(2.5rem, 3rem, 8vw)) / repeat(
+      8,
+      clamp(2.5rem, 3rem, 8vw)
+    );
   /* prevents board collision on small screens */
-  margin-bottom: .5rem;
+  margin-bottom: 0.5rem;
 }
 
 .square {
@@ -136,7 +139,64 @@ main#in-game {
   content: url(./fire.svg);
 }
 
+.ship-sunk {
+  content: url(./skull-outline.svg);
+}
+
 .clicked {
   box-shadow: inset 0px 0px 4px 6px var(--shadow);
   background-color: var(--darken);
+}
+
+dialog::backdrop {
+  background-color: var(--darken-further);
+}
+
+dialog {
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translateX(-50%) translateY(-50%);
+  -moz-transform: translateX(-50%) translateY(-50%);
+  -ms-transform: translateX(-50%) translateY(-50%);
+  transform: translateX(-50%) translateY(-50%);
+
+  border-radius: .8rem;
+  border: 2px solid var(--btn-border);
+  font-size: 1.5rem;
+  font-weight: 600;
+  box-shadow: 4px 4px 0px var(--darken);
+
+  @starting-style {
+    display: none;
+  }
+
+  transition: all ease-in-out 300ms;
+}
+
+dialog:open {
+  display: block;
+}
+
+#dialog-btn {
+  font-size: 1rem;
+  padding: .2rem;
+  border: 1px solid var(--btn-border);
+  border-radius: 0.6rem;
+  transition: all ease-in-out 200ms;
+}
+
+#dialog-btn:hover {
+  cursor: pointer;
+  background-color: var(--darken);
+  transform: scale(1.02);
+  box-shadow: 4px 4px 0px var(--shadow);
+}
+
+#dialog-btn:active {
+  transform: scale(0.98);
+  background-color: var(--darken-further);
+}
+
+#dialog-wrapper {
+  margin: 1.2rem;
 }
