@@ -15,6 +15,9 @@ html {
   --shadow: rgba(205, 205, 205, 0.5);
 }
 
+/* layers for the square styling, so i can overwrite values */
+@layer normal-square, no-touch;
+
 button {
   font-family: sans-serif;
 }
@@ -90,6 +93,7 @@ main#in-game {
 
 .board-header {
   font-size: 1.2rem;
+  transition: all ease-in-out 1000ms;
 }
 
 #main-inner > div {
@@ -104,6 +108,7 @@ main#in-game {
   border: 0.5rem solid var(--btn-border);
   border-radius: 0.5rem;
   display: grid;
+  transition: all ease-in-out 500ms;
   grid-template: repeat(8, clamp(2.5rem, 3rem, 8vw)) / repeat(
       8,
       clamp(2.5rem, 3rem, 8vw)
@@ -117,10 +122,28 @@ main#in-game {
   transition: all ease-in-out 200ms;
 }
 
-.square:hover:not(.hit):not(.occupied) {
-  box-shadow: inset 0px 0px 4px 6px var(--shadow);
-  background-color: var(--darken);
-  cursor: pointer;
+@layer normal-square {
+  .square:hover:not(.hit):not(.occupied) {
+    box-shadow: inset 0px 0px 4px 6px var(--shadow);
+    background-color: var(--darken);
+    cursor: pointer;
+  }
+}
+
+/* when i want to show that input on one board is disabled */
+@layer no-touch {
+  .no-touch,
+  .no-touch > .square:hover {
+    cursor: not-allowed;
+  }
+
+  .no-touch {
+    filter: opacity(0.5) blur(0.05rem);
+  }
+
+  div:has(+ .no-touch) {
+    opacity: 0;
+  }
 }
 
 .occupied.horizontal::before {
@@ -149,7 +172,8 @@ main#in-game {
 }
 
 dialog::backdrop {
-  background-color: var(--darken-further);
+  background-color: rgba(128, 128, 128, 0.6);
+  backdrop-filter: blur(0.05rem);
 }
 
 dialog {
@@ -160,7 +184,7 @@ dialog {
   -ms-transform: translateX(-50%) translateY(-50%);
   transform: translateX(-50%) translateY(-50%);
 
-  border-radius: .8rem;
+  border-radius: 0.8rem;
   border: 2px solid var(--btn-border);
   font-size: 1.5rem;
   font-weight: 600;
@@ -179,7 +203,7 @@ dialog:open {
 
 #dialog-btn {
   font-size: 1rem;
-  padding: .2rem;
+  padding: 0.2rem;
   border: 1px solid var(--btn-border);
   border-radius: 0.6rem;
   transition: all ease-in-out 200ms;

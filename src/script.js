@@ -16,6 +16,16 @@ startBtn.addEventListener("click", (e) => {
   main.innerHTML = "";
   main.setAttribute("id", "in-game");
 
+  main.innerHTML = `<div id="main-inner">
+        <div id="player">
+            <div class="board-header player-board-header">Your ships</div>
+            <div class="player board"></div>
+        </div>
+        <div id="Attack">
+            <div class="board-header enemy-board-header">Attack enemy</div>
+            <div class="enemy board"></div>
+        </div>
+    </div>`;
   displayBoards(player.board.board, enemy.board.board);
   placeShips(player.board, enemy.board);
 });

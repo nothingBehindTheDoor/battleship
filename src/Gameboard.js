@@ -60,7 +60,12 @@ class Gameboard {
 
   receiveAttack(cs) {
     const square = this.board[cs[0]][cs[1]];
-    if (!square.hit && square.ship) square.ship.hit();
+    if (square.hit) return null;
+    if (!square.hit && square.ship) {
+      square.ship.hit();
+      square.hit = true;
+      if (square.ship.isSunk()) return "sunk";
+    }
     square.hit = true;
     return square.ship ? true : false;
   }
