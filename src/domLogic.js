@@ -275,9 +275,13 @@ function startRound() {
               nextTargets[0][whatDirectionWasThisAttackSoWeCanDirectTheNextOne],
               whatDirectionWasThisAttackSoWeCanDirectTheNextOne,
             ];
-            delete nextTargets[0][
-              [whatDirectionWasThisAttackSoWeCanDirectTheNextOne]
-            ];
+            if (nextTargets[0].bestTarget[0] === null) {
+              delete nextTargets[0].bestTarget;
+            } else {
+              delete nextTargets[0][
+                [whatDirectionWasThisAttackSoWeCanDirectTheNextOne]
+              ];
+            }
           }
 
           break;
