@@ -81,7 +81,6 @@ function placeShips(board1, board2) {
     // checks that there are ships left to be placed
     if (Object.values(ships).reduce((prev, cur) => prev + cur) === 0) {
       // removes the class that makes the enemy board blurred/greyed out
-      document.querySelector(".enemy").classList.toggle("no-touch");
       startRound();
       return;
     }
@@ -193,6 +192,7 @@ function startRound() {
   function playerTurn() {
     document.querySelector("#title-heading").textContent =
       "Click on a square to attack the enemy!";
+    document.querySelector(".enemy").classList.toggle("no-touch");
     document.querySelector(".player").classList.toggle("no-touch");
     document.querySelector(".enemy").addEventListener(
       "click",
@@ -215,41 +215,85 @@ function startRound() {
 
   let nextTargets = [];
   function enemyTurn() {
-    if (!document.querySelector(".enemy").classList.contains("no-touch")) document.querySelector(".enemy").classList.toggle("no-touch");
+    if (!document.querySelector(".enemy").classList.contains("no-touch"))
+      document.querySelector(".enemy").classList.toggle("no-touch");
     document.querySelector("#title-heading").textContent = "Enemy's turn!";
 
     let cs = [];
-    // nextTargets is a queue to which an array containing adjacent coordinates is pushed if the enemy hits something.
+    // nextTargets is a queue to which an object containing adjacent coordinates is pushed if the enemy hits something.
     if (nextTargets[0]) {
-      if (nextTargets[0].length === 0) nextTargets.shift();
-      cs = nextTargets[0].shift();
+      if (Object.entries(nextTargets[0]).length === 0) {
+        nextTargets.shift();
+        enemyTurn();
+        return;
+      }
+      let whatDirectionWasThisAttackSoWeCanDirectTheNextOne = false;
+      if (nextTargets[0].bestTarget) {
+        cs = nextTargets[0].bestTarget[0];
+        whatDirectionWasThisAttackSoWeCanDirectTheNextOne =
+          nextTargets[0].bestTarget[1];
+        delete nextTargets[0].bestTarget;
+      } else {
+        [whatDirectionWasThisAttackSoWeCanDirectTheNextOne, cs] =
+          Object.entries(nextTargets[0])[0];
+        delete nextTargets[0][Object.entries(nextTargets[0])[0][0]];
+      }
+
       switch (player.board.receiveAttack(cs)) {
         case null:
           enemyTurn();
           return;
+          break;
         case true:
-          if (nextTargets[0].length === 0) nextTargets.shift();
-          nextTargets.unshift([]);
-          for (let i = 0; i < 2; i++) {
-            let target1 = [...cs];
-            let target2 = [...cs];
-            if (cs[i] > 0) {
-              target1[i]--;
-              nextTargets.at(-1).push(target1);
-            }
-            if (cs[i] < 7) {
-              target2[i]++;
-              nextTargets.at(-1).push(target2);
-            }
+          nextTargets.unshift({});
+
+          // this takes all the adjacent squares and adds them to the queue
+          let target1 = [...cs];
+          let target2 = [...cs];
+          let target3 = [...cs];
+          let target4 = [...cs];
+          if (cs[0] > 0) {
+            target1[0]--;
+            nextTargets[0].top = target1;
           }
+          if (cs[0] < 7) {
+            target2[0]++;
+            nextTargets[0].bottom = target2;
+          }
+          if (cs[1] > 0) {
+            target3[1]--;
+            nextTargets[0].left = target3;
+          }
+          if (cs[1] < 7) {
+            target4[1]++;
+            nextTargets[0].right = target4;
+          }
+
+          // if the last attack was directed, make the next one in the same direction to increase hitrate.
+          if (whatDirectionWasThisAttackSoWeCanDirectTheNextOne) {
+            nextTargets[0].bestTarget = [
+              nextTargets[0][whatDirectionWasThisAttackSoWeCanDirectTheNextOne],
+              whatDirectionWasThisAttackSoWeCanDirectTheNextOne,
+            ];
+            delete nextTargets[0][
+              [whatDirectionWasThisAttackSoWeCanDirectTheNextOne]
+            ];
+          }
+
           break;
         case false:
+          // okay so this is bullshit.
+          // or more precisely it makes it so if for example the enemy attack direction is up but it hits an empty square before sinking the ship then it targets the adjacents of the first square in the queue.
+          if (whatDirectionWasThisAttackSoWeCanDirectTheNextOne) {
+            nextTargets.unshift(nextTargets.pop());
+          }
           break;
         case "sunk":
-          nextTargets.shift();
+          // clear the target queue if a ship is successfully sunk.
+          nextTargets = [];
           break;
       }
-      console.log(nextTargets, cs);
+      console.log(JSON.parse(JSON.stringify(nextTargets)), cs);
     } else {
       cs.push(Math.floor(Math.random() * 7.99));
       cs.push(Math.floor(Math.random() * 7.99));
@@ -259,27 +303,37 @@ function startRound() {
           enemyTurn();
           return;
         case true:
-          nextTargets.unshift([]);
-          for (let i = 0; i < 2; i++) {
-            let target1 = [...cs];
-            let target2 = [...cs];
-            if (cs[i] > 0) {
-              target1[i]--;
-              nextTargets.at(-1).push(target1);
-            }
-            if (cs[i] < 7) {
-              target2[i]++;
-              nextTargets.at(-1).push(target2);
-            }
+          nextTargets.unshift({});
+
+          // this takes all the adjacent squares and adds them to the queue
+          let target1 = [...cs];
+          let target2 = [...cs];
+          let target3 = [...cs];
+          let target4 = [...cs];
+          if (cs[0] > 0) {
+            target1[0]--;
+            nextTargets[0].top = target1;
           }
+          if (cs[0] < 7) {
+            target2[0]++;
+            nextTargets[0].bottom = target2;
+          }
+          if (cs[1] > 0) {
+            target3[1]--;
+            nextTargets[0].left = target3;
+          }
+          if (cs[1] < 7) {
+            target4[1]++;
+            nextTargets[0].right = target4;
+          }
+
           break;
         case false:
           break;
         case "sunk":
-          nextTargets.shift();
           break;
       }
-      console.log(nextTargets, cs);
+      console.log(JSON.parse(JSON.stringify(nextTargets)), cs);
     }
 
     if (player.board.allSunken()) {
@@ -289,7 +343,7 @@ function startRound() {
     } else {
       setTimeout(() => {
         displayBoards(player.board.board, enemy.board.board);
-        document.querySelector(".enemy").classList.toggle("no-touch");
+
         setTimeout(playerTurn, 1000);
       }, 3000);
     }

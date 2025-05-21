@@ -159,7 +159,7 @@ main#in-game {
 }
 
 .ship-hit::before {
-  content: url(./fire.svg);
+  content: url(./fire.svg) !important;
 }
 
 .ship-sunk {
